@@ -601,7 +601,7 @@ taxrate
 taxrate
 0
 0.3
-0.005
+0.035
 0.005
 1
 NIL
@@ -791,7 +791,7 @@ SWITCH
 686
 layout?
 layout?
-1
+0
 1
 -1000
 
@@ -1738,7 +1738,7 @@ SWITCH
 929
 mass_simulation_speedup?
 mass_simulation_speedup?
-0
+1
 1
 -1000
 

@@ -90,7 +90,7 @@ ggsave(
   device = cairo_pdf
 )
 
-# Fig. 3: Economic outcome variables.
+# Fig. 3: Economic outcome variables over time.
 # File: Fig03_econ_dyn.pdf
 # BehaviorSpace: econ-dyn-bl-all
 # Data: simdata/WealthPerception econ-dyn-bl-all-table.csv
@@ -478,7 +478,7 @@ df |>
   geom_point(aes(size = is_baseline)) +
   geom_line() +
   geom_errorbar(
-    aes(ymin = mean - stderr, ymax = mean + stderr),
+    aes(ymin = mean - 1.96*stderr, ymax = mean + 1.96*stderr),
     width = 0.0025,
     linewidth = 1
   ) +
@@ -561,7 +561,7 @@ fig_gini_tau_sigma <- s |>
     color = factor(taxrate),
     fill = factor(taxrate)
   )) +
-  geom_line() +
+  geom_line() + geom_point() +
   geom_ribbon(
     aes(ymin = lower_gini, ymax = upper_gini),
     alpha = 0.2,
@@ -586,7 +586,7 @@ fig_gini_tau_sigma_2 <- s |>
     color = factor(sigma),
     fill = factor(sigma)
   )) +
-  geom_line() +
+  geom_line() + geom_point() +
   geom_ribbon(
     aes(ymin = lower_gini, ymax = upper_gini),
     alpha = 0.2,
@@ -611,7 +611,7 @@ fig_immobility_tau_sigma <- s |>
     color = factor(taxrate),
     fill = factor(taxrate)
   )) +
-  geom_line() +
+  geom_line() + geom_point() +
   geom_ribbon(
     aes(ymin = lower_immobility, ymax = upper_immobility),
     alpha = 0.2,
@@ -634,7 +634,7 @@ fig_immobility_tau_sigma_2 <- s |>
     color = factor(sigma),
     fill = factor(sigma)
   )) +
-  geom_line() +
+  geom_line() + geom_point() +
   geom_ribbon(
     aes(ymin = lower_immobility, ymax = upper_immobility),
     alpha = 0.2,
@@ -654,6 +654,7 @@ fig_gatsby_line <- d |>
   ggplot(aes(gini, immobility_top20, color = factor(sigma))) + #, alpha = taxrate)) +
   geom_point(shape = 16, size = 3, alpha = 0.25) +
   geom_smooth(aes(group = factor(sigma)), method = "lm", se = FALSE) +
+  ylim(c(0.4,0.9)) +
   labs(
     x = "Gini coefficient",
     y = "Immobility Top 20%",
@@ -668,6 +669,7 @@ fig_gatsby_line2 <- d |>
   ggplot(aes(gini, immobility_top20, color = factor(taxrate))) + #, alpha = sigma)) +
   geom_point(shape = 16, size = 3, alpha = 0.25) +
   geom_smooth(aes(group = factor(taxrate)), method = "lm", se = FALSE) +
+  ylim(c(0.4,0.9)) +
   labs(
     x = "Gini coefficient",
     y = "Immobility Top 20%",
@@ -825,12 +827,12 @@ Gbar <- nodes_df |>
   labs(tag = "B") +
   theme_minimal() +
   theme(panel.grid = element_blank())
-Gnet |
+free(Gnet) |
   (Gbar / Gmean + plot_layout(heights = c(1, 2))) +
     plot_layout(widths = c(3, 4))
 ggsave(
   "Figs/Fig08_perception_demo.pdf",
-  width = 6,
+  width = 7.5,
   height = 5,
   device = cairo_pdf
 )
@@ -1160,10 +1162,22 @@ p1 <- df |>
     tag = "A"
     #caption = "Each thin line represents one of 50 simulation runs with homophily strength 10 and efficiency 0.95.\nThe thick blue line shows a smoothed average over all runs."
   ) +
+  geom_text(
+    data = data.frame(
+      step = 30,
+      taxrate = 0.07,
+      homophily_strength = factor("10", levels = c("10", "0")),
+      efficiency = 0.95
+    ),
+    aes(x = step, y = taxrate, label = "baseline"),
+    inherit.aes = FALSE,
+    size = 5,
+    color = "darkred"
+  ) +
   guides(color = "none", linewidth = "none") +
   theme_minimal(base_size = 18) +
   theme(strip.placement = "outside")
-df <- read_csv(
+df2 <- read_csv(
   "simdata/WealthPerception tax_rate_new_social_on-table.csv",
   skip = 6,
   show_col_types = FALSE
@@ -1173,7 +1187,7 @@ df <- read_csv(
     step = `[step]`,
     taxrate = `taxrate...27`
   )
-dfsum <- df |>
+dfsum <- df2 |>
   filter(step >= 150) |>
   summarize(
     mean_tax = mean(taxrate),
