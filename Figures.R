@@ -478,7 +478,7 @@ df |>
   geom_point(aes(size = is_baseline)) +
   geom_line() +
   geom_errorbar(
-    aes(ymin = mean - 1.96*stderr, ymax = mean + 1.96*stderr),
+    aes(ymin = mean - 1.96 * stderr, ymax = mean + 1.96 * stderr),
     width = 0.0025,
     linewidth = 1
   ) +
@@ -561,7 +561,8 @@ fig_gini_tau_sigma <- s |>
     color = factor(taxrate),
     fill = factor(taxrate)
   )) +
-  geom_line() + geom_point() +
+  geom_line() +
+  geom_point() +
   geom_ribbon(
     aes(ymin = lower_gini, ymax = upper_gini),
     alpha = 0.2,
@@ -586,7 +587,8 @@ fig_gini_tau_sigma_2 <- s |>
     color = factor(sigma),
     fill = factor(sigma)
   )) +
-  geom_line() + geom_point() +
+  geom_line() +
+  geom_point() +
   geom_ribbon(
     aes(ymin = lower_gini, ymax = upper_gini),
     alpha = 0.2,
@@ -611,7 +613,8 @@ fig_immobility_tau_sigma <- s |>
     color = factor(taxrate),
     fill = factor(taxrate)
   )) +
-  geom_line() + geom_point() +
+  geom_line() +
+  geom_point() +
   geom_ribbon(
     aes(ymin = lower_immobility, ymax = upper_immobility),
     alpha = 0.2,
@@ -634,7 +637,8 @@ fig_immobility_tau_sigma_2 <- s |>
     color = factor(sigma),
     fill = factor(sigma)
   )) +
-  geom_line() + geom_point() +
+  geom_line() +
+  geom_point() +
   geom_ribbon(
     aes(ymin = lower_immobility, ymax = upper_immobility),
     alpha = 0.2,
@@ -654,7 +658,7 @@ fig_gatsby_line <- d |>
   ggplot(aes(gini, immobility_top20, color = factor(sigma))) + #, alpha = taxrate)) +
   geom_point(shape = 16, size = 3, alpha = 0.25) +
   geom_smooth(aes(group = factor(sigma)), method = "lm", se = FALSE) +
-  ylim(c(0.4,0.9)) +
+  ylim(c(0.4, 0.9)) +
   labs(
     x = "Gini coefficient",
     y = "Immobility Top 20%",
@@ -669,7 +673,7 @@ fig_gatsby_line2 <- d |>
   ggplot(aes(gini, immobility_top20, color = factor(taxrate))) + #, alpha = sigma)) +
   geom_point(shape = 16, size = 3, alpha = 0.25) +
   geom_smooth(aes(group = factor(taxrate)), method = "lm", se = FALSE) +
-  ylim(c(0.4,0.9)) +
+  ylim(c(0.4, 0.9)) +
   labs(
     x = "Gini coefficient",
     y = "Immobility Top 20%",
@@ -953,12 +957,12 @@ dflong <- df |>
   mutate(
     Measure = case_when(
       Outcome == "fraction_below_mean" ~
-        "Percentage with wealth below actual mean",
+        "Agents with wealth below mean (= for more tax under full efficiency and no perception bias)",
       Outcome == "fraction_below_perceived_mean" |
         (Outcome == "for_more_tax" & efficiency == 1) ~
-        "Percentage with wealth below perceived mean\n(= percentage for more tax under full efficiency)",
+        "Agents with wealth below perceived mean (= for more tax under full efficiency)",
       Outcome == "for_more_tax" & efficiency != 1 ~
-        paste("Percentage for more tax under efficiency", efficiency)
+        paste0("Agents for more tax under efficiency ", 100 * efficiency, "%")
     ) |>
       as_factor(),
     wealth_change = if_else(
@@ -979,7 +983,8 @@ greenpal <- colorRampPalette(RColorBrewer::brewer.pal(9, "YlGn")[4:9])(7)
 dflong |>
   filter(
     Measure ==
-      "Percentage with wealth below perceived mean\n(= percentage for more tax under full efficiency)",
+      "Agents with wealth below perceived mean (= for more tax under full efficiency)",
+    # "Percentage with wealth below perceived mean\n(= percentage for more tax under full efficiency)",
     wealth_change == "Only network rewiring",
     step > 0,
     homophily_strength > 0
@@ -1009,7 +1014,7 @@ dflong |>
     labels = scales::percent_format(accuracy = 1)
   ) +
   scale_color_manual(values = greenpal) +
-  facet_grid(~wealth_change) +
+  #facet_grid(~wealth_change) +
   labs(
     #title = "Time evolution of Percentage with Wealth below Perceived Mean Wealth",
     x = "Time",
@@ -1070,20 +1075,24 @@ dflong |> # dflong is take from Fig. 11 code
     #title = "Impact of Homophily on Perception of Mean Wealth and Tax Preferences",
     x = "Homophily strength (h)",
     y = "Mean value at t=20",
-    #color = "Measure",
+    color = NULL
     #caption = "Initial wealth distribution is a standard lognormal distribution. Initial network is random without homophily and minimal degree 10.\nWealth change with baseline parameters μ = 0.01, σ = 0.25, τ = 0.015. No enogenous change of tax.\nNumber of simulations per data point: 60 for actual mean, 70 for perceived mean and full efficiency, 10 for all other. Error bars: 1 SD"
   ) +
-  theme_minimal() +
+  theme_minimal(base_size = 12) +
+  guides(color = guide_legend(ncol = 1)) +
   theme(
     plot.caption = element_text(
       hjust = 0, # Left align the caption
       margin = margin(t = 10, b = 5, l = 0, r = -200), # Negative left/right margins
-    )
+    ),
+    legend.key.size = unit(0, 'lines'),
+    legend.position = "bottom",
+    legend.byrow = TRUE
   )
 ggsave(
   "Figs/Fig12_homophily_perceived_mean.pdf",
-  width = 8,
-  height = 4,
+  width = 7,
+  height = 4.5,
   device = cairo_pdf
 )
 
@@ -1102,7 +1111,6 @@ df <- read_csv(
     step = `[step]`,
     taxrate = `taxrate...27`
   ) |>
-  filter(efficiency %in% c(0.7, 0.95), homophily_strength %in% c(0, 10)) |>
   mutate(
     run_id = 1 + (as.numeric(factor(run)) %% 10),
     is_baseline = ifelse(
@@ -1114,16 +1122,20 @@ df <- read_csv(
 dfmean <- df |>
   summarize(
     mean_tax = mean(taxrate),
+    mean_gini = mean(total_gini),
+    mean_immobility_top20 = mean(immobility_top20),
     is_baseline = first(is_baseline),
     .by = c(step, efficiency, homophily_strength)
   )
 # Plot
 p1 <- df |>
+  filter(efficiency %in% c(0.7, 0.95), homophily_strength %in% c(0, 10)) |>
   mutate(homophily_strength = fct_rev(factor(homophily_strength))) |>
   ggplot(aes(x = step, y = taxrate, color = factor(run_id))) +
   geom_line(alpha = 0.5) +
   geom_line(
-    data = dfmean,
+    data = dfmean |>
+      filter(efficiency %in% c(0.7, 0.95), homophily_strength %in% c(0, 10)),
     aes(x = step, y = mean_tax, linewidth = is_baseline),
     color = "darkred"
   ) +
@@ -1191,6 +1203,9 @@ dfsum <- df2 |>
   filter(step >= 150) |>
   summarize(
     mean_tax = mean(taxrate),
+    sd_tax = sd(taxrate),
+    mean_gini = mean(total_gini),
+    mean_immobility_top20 = mean(immobility_top20),
     sd_tax = sd(taxrate),
     n = n(),
     .by = c(homophily_strength, efficiency)
@@ -1291,5 +1306,238 @@ ggsave(
   "Figs/Fig13_taxrate_dyn.pdf",
   width = 8.5,
   height = 10,
+  device = cairo_pdf
+)
+
+
+## Fig. Appendix
+
+dfsumlong <- dfsum |>
+  pivot_longer(
+    cols = c(mean_gini, mean_immobility_top20),
+    names_to = "Measure",
+    values_to = "Value"
+  )
+
+p1_majority <- df |>
+  filter(
+    run_id == 4,
+    step < 100,
+    step > 0,
+    efficiency %in% c(0.7, 0.95),
+    homophily_strength %in% c(0, 10)
+  ) |>
+  mutate(homophily_strength = fct_rev(factor(homophily_strength))) |>
+  mutate(
+    `under full efficiency\nand no perception bias` = fraction_below_mean,
+    `under full efficiency` = fraction_below_perceived_mean,
+    `under efficiency 𝜙\n(as in the simulation)` = for_more_tax
+  ) |>
+  pivot_longer(
+    cols = c(
+      `under full efficiency\nand no perception bias`,
+      `under full efficiency`,
+      `under efficiency 𝜙\n(as in the simulation)`
+    )
+  ) |>
+  ggplot(aes(x = step, y = value, color = fct_rev(name))) +
+  geom_hline(yintercept = 0.5, color = "gray") +
+  geom_line() +
+  facet_grid(
+    homophily_strength ~ efficiency,
+    #switch = "both",
+    labeller = labeller(
+      efficiency = c(
+        "0.95" = "𝜙 = 95%",
+        "0.7" = "𝜙 = 70%"
+      ),
+      homophily_strength = c(
+        "0" = "h = 0",
+        "10" = "h = 10"
+      )
+    )
+  ) +
+  scale_x_continuous(
+    breaks = seq(0, 100, 20),
+    minor_breaks = NULL,
+    #position = "top"
+  ) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = c(0, 0.5, 1),
+    minor_breaks = NULL,
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  scale_color_manual(
+    values = c("deepskyblue3", "purple", "darkgreen")
+  ) +
+  scale_linewidth(range = c(0.5, 1.5)) +
+  labs(
+    #title = "Tax Rate Dynamics under Homophily Strength 10 and Efficiency 0.95",
+    x = NULL, #"Time",
+    y = NULL,
+    color = "Agents for more tax",
+    tag = "A"
+    #caption = "Each thin line represents one of 50 simulation runs with homophily strength 10 and efficiency 0.95.\nThe thick blue line shows a smoothed average over all runs."
+  ) +
+  guides(linewidth = "none", color = guide_legend(ncol = 1)) +
+  theme_minimal(base_size = 18) +
+  theme(legend.position = "right")
+
+p1_ineq_immob <-
+  dfmean |>
+  filter(
+    step < 100,
+    efficiency %in% c(0.7, 0.95),
+    homophily_strength %in% c(0, 10)
+  ) |>
+  pivot_longer(cols = c(mean_gini, mean_immobility_top20)) |>
+  mutate(
+    homophily_strength = fct_rev(factor(homophily_strength)),
+    efficiency = fct_rev(factor(efficiency))
+  ) |>
+  ggplot(aes(
+    x = step,
+    y = value,
+    color = homophily_strength,
+    linetype = efficiency
+  )) +
+  geom_line() +
+  facet_wrap(
+    ~name,
+    nrow = 1,
+    labeller = labeller(
+      name = c(
+        "mean_gini" = "Gini",
+        "mean_immobility_top20" = "Immobility Top 20%"
+      )
+    )
+  ) +
+  scale_x_continuous(
+    breaks = seq(0, 100, 20),
+    minor_breaks = NULL,
+    #position = "top"
+  ) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.2),
+    minor_breaks = NULL,
+    # labels = scales::percent_format(accuracy = 1),
+    # position = "right"
+  ) +
+  scale_color_manual(values = c("darkred", "deepskyblue2")) +
+  scale_linetype(labels = c("95%", "70%")) +
+  labs(
+    #title = "Tax Rate Dynamics under Homophily Strength 10 and Efficiency 0.95",
+    x = NULL, #"Time",
+    y = NULL,
+    color = "Homophily\nstrength (h)",
+    linetype = "Efficiency (𝜙)",
+    tag = "B"
+    #caption = "Each thin line represents one of 50 simulation runs with homophily strength 10 and efficiency 0.95.\nThe thick blue line shows a smoothed average over all runs."
+  ) +
+  guides() +
+  theme_minimal(base_size = 18)
+
+p2_gini_immob <- ggplot(
+  mapping = aes(x = efficiency, y = homophily_strength, fill = Value)
+) +
+  geom_tile(data = dfsumlong |> filter(efficiency == 0.99), width = 0.05) +
+  geom_tile(data = dfsumlong |> filter(efficiency != 0.99), width = 0.05) +
+  geom_tile(
+    data = expand_grid(
+      homophily_strength = c(0, 10),
+      efficiency = c(0.7, 0.95),
+      Value = 0
+    ) |>
+      mutate(
+        homophily_strength_fct = fct_rev(factor(homophily_strength)),
+        efficiency_fct = fct_rev(factor(efficiency))
+      ),
+    mapping = aes(linetype = efficiency_fct, color = homophily_strength_fct),
+    width = 0.05,
+    height = 2,
+    alpha = 0,
+    linewidth = 1
+  ) +
+  geom_label(
+    data = dfsumlong |>
+      filter(
+        efficiency == 0.99 &
+          homophily_strength == 14 |
+          efficiency == 0.99 & homophily_strength == 0
+      ),
+    mapping = aes(label = paste0(round(Value, 2))),
+    position = position_nudge(x = 0.01),
+    fill = "white",
+    size = 3
+  ) +
+  geom_label(
+    data = dfsumlong |>
+      filter(
+        efficiency == 0.95 &
+          homophily_strength == 0 |
+          efficiency == 0.95 & homophily_strength == 10 |
+          efficiency == 0.7 & homophily_strength == 0 |
+          efficiency == 0.85 & homophily_strength == 2 |
+          efficiency == 0.9 & homophily_strength == 6 |
+          efficiency == 0.95 & homophily_strength == 14 |
+          efficiency == 0.75 & homophily_strength == 2 |
+          efficiency == 0.7 & homophily_strength == 10
+      ),
+    mapping = aes(label = paste0(round(Value, 2))),
+    fill = "white",
+    size = 3
+  ) +
+  facet_wrap(
+    ~Measure,
+    nrow = 1,
+    labeller = as_labeller(
+      c(
+        mean_gini = "Gini",
+        mean_immobility_top20 = "Immobility Top 20%"
+      )
+    )
+  ) +
+  scale_y_continuous(breaks = seq(0, 14, 2), minor_breaks = NULL) +
+  scale_x_continuous(
+    breaks = c(seq(0.7, 0.95, 0.1), 0.99),
+    #minor_breaks = NULL,
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  scale_color_manual(values = c("darkred", "deepskyblue2")) +
+  scale_fill_gradientn(
+    limits = c(0, 1),
+    colors = c("white", RColorBrewer::brewer.pal(6, "YlGnBu")),
+    values = scales::rescale(c(0, 1)) # Specify the points where colors change
+    #  values = scales::rescale(c(0, 0.0005, 0.05, 0.2, 0.5, 0.61, 0.66)) # Specify the points where colors change
+  ) +
+  labs(
+    #title = "Average Tax Rate by Homophily Strength and Efficiency",
+    y = "Homophily strength (h)",
+    x = "Efficiency (𝜙)",
+    fill = NULL,
+    tag = "C"
+    # caption = "Each tile is based on 15 simulation runs. Average of time steps 150 to 200."
+  ) +
+  annotate(
+    "text",
+    y = 9,
+    x = 0.8,
+    label = "Valley of\nzero wealth tax",
+    size = 5,
+    color = "white"
+  ) +
+  guides(linetype = "none", color = "none") +
+  theme_minimal(base_size = 18)
+
+p1_majority /
+  p1_ineq_immob /
+  p2_gini_immob +
+  plot_layout(heights = c(1.3, 0.7, 1))
+ggsave(
+  "Figs/FigAppendix_taxrate_dyn.pdf",
+  width = 10,
+  height = 12,
   device = cairo_pdf
 )
