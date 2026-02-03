@@ -538,7 +538,7 @@ minimal_degree
 minimal_degree
 1
 50
-50.0
+10.0
 1
 1
 NIL
@@ -601,7 +601,7 @@ taxrate
 taxrate
 0
 0.3
-0.225
+0.04
 0.005
 1
 NIL
@@ -791,7 +791,7 @@ SWITCH
 686
 layout?
 layout?
-1
+0
 1
 -1000
 

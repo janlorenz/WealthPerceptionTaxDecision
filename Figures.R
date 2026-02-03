@@ -7,9 +7,9 @@ library(patchwork)
 library(scales)
 library(glue)
 
-# Fig. 2.: Model trajectories with different initial wealth and different initial
+# Fig. 3.: Model trajectories with different initial wealth and different initial
 # tax rates in the Tax rate/Gini phase plane.
-# File: Fig02_trajectories_baseline.pdf
+# File: Fig03_trajectories_baseline.pdf
 # BehaviorSpace: trajectories (225 runs)
 # Data: simdata/WealthPerception trajectories-table.csv
 
@@ -84,14 +84,14 @@ ggplot(
     legend.key.size = unit(0.5, "cm")
   )
 ggsave(
-  "Figs/Fig02_trajectories_baseline.pdf",
+  "Figs/Fig03_trajectories_baseline.pdf",
   width = 6,
   height = 5,
   device = cairo_pdf
 )
 
-# Fig. 3: Economic outcome variables over time.
-# File: Fig03_econ_dyn.pdf
+# Fig. 4: Economic outcome variables over time.
+# File: Fig04_econ_dyn.pdf
 # BehaviorSpace: econ-dyn-bl-all
 # Data: simdata/WealthPerception econ-dyn-bl-all-table.csv
 d <- read_csv(
@@ -240,11 +240,11 @@ figimmobility <- summary_all |>
   labs(title = "Social immobility", x = "Time", y = NULL, tag = "D")
 # Save plot
 (figgini | figwealth_shares) / (figlt_gr | figimmobility)
-ggsave("Figs/Fig03_econ_dyn.pdf", width = 9, height = 7, device = cairo_pdf)
+ggsave("Figs/Fig04_econ_dyn.pdf", width = 9, height = 7, device = cairo_pdf)
 
 
-# Fig. 4: Heavy-tailed distribution.
-# File: Fig04_wealth_powerlaw.pdf
+# Fig. 5: Heavy-tailed distribution.
+# File: Fig05_wealth_powerlaw.pdf
 # BehaviorSpace: Not used, instead NetLogo function save-wealth-distr at tick 200
 # Data: simdata/wealth_data_100.csv
 df <- read_csv(
@@ -274,7 +274,7 @@ par(
   family = "sans" # Use a clean sans font
 )
 # Plot with fitted power law
-pdf("Figs/Fig04_wealth_powerlaw.pdf", width = 7, height = 5)
+pdf("Figs/Fig05_wealth_powerlaw.pdf", width = 7, height = 5)
 plot(
   pl,
   main = "CCDF of Wealth with Power-Law Fit",
@@ -310,8 +310,8 @@ axis(
 dev.off()
 
 
-# Fig. 5.: Effects of individual parameters on economic outcomes.
-# File: Fig05_econ_growth.pdf
+# Fig. 6.: Effects of individual parameters on economic outcomes.
+# File: Fig06_econ_growth.pdf
 # BehaviorSpace: econ-dyn-mu, econ-dyn-sigma, econ-dyn-tax, econ-dyn-eff
 # Data:
 # simdata/WealthPerception econ-dyn-mu-table.csv
@@ -442,15 +442,15 @@ df_all |>
     legend.position = "none"
   )
 ggsave(
-  "Figs/Fig05_econ_growth.pdf",
+  "Figs/Fig06_econ_growth.pdf",
   width = 12,
   height = 9,
   device = cairo_pdf
 )
 
 
-# Fig. 6: Effects of the tax rate on the long-term growth factor after 200 time steps.
-# File: Fig06_growth.pdf
+# Fig. 7: Effects of the tax rate on the long-term growth factor after 200 time steps.
+# File: Fig07_growth.pdf
 # BehaviorSpace: econ growth efficiency tax
 # Data: WealthPerception econ growth efficiency tax-table.csv
 df <- read_csv(
@@ -505,14 +505,14 @@ df |>
     axis.text.x = element_text(hjust = 0.5, size = 10)
   )
 ggsave(
-  "Figs/Fig06_growth.pdf",
+  "Figs/Fig07_growth.pdf",
   width = 6,
   height = 4,
   device = cairo_pdf
 )
 
-# Fig. 7: Effects of parameter combinations on inequality and social mobility
-# File: Fig07_gatsby.pdf
+# Fig. 8: Effects of parameter combinations on inequality and social mobility
+# File: Fig08_gatsby.pdf
 # BehaviorSpace:
 # Data:
 # Load data
@@ -691,15 +691,15 @@ fig_gatsby_line2 <- d |>
   guide_area() +
   plot_layout(nrow = 3, heights = c(1, 1.85, 0.05))
 ggsave(
-  "Figs/Fig07_gatsby.pdf",
+  "Figs/Fig08_gatsby.pdf",
   width = 14,
   height = 11,
   device = cairo_pdf
 )
 
 
-# Fig. 8: Example of how social dynamics shape agents’ perceptions.
-# File: Fig08_perception_demo.pdf
+# Fig. 9: Example of how social dynamics shape agents’ perceptions.
+# File: Fig09_perception_demo.pdf
 purple_palette_function <- colorRampPalette(c("white", "magenta3", "black"))
 purpal <- purple_palette_function(8)
 wealth <- c(20, 13, 9, 7, 5.5, 5, 4.5, 4)
@@ -835,15 +835,15 @@ free(Gnet) |
   (Gbar / Gmean + plot_layout(heights = c(1, 2))) +
     plot_layout(widths = c(3, 4))
 ggsave(
-  "Figs/Fig08_perception_demo.pdf",
+  "Figs/Fig09_perception_demo.pdf",
   width = 7.5,
   height = 5,
   device = cairo_pdf
 )
 
 
-# Fig. 9: Perceived Wealth Decile across Homophily Strength and Wealth Perception.
-# File: Fig09_homophily_decile.pdf
+# Fig. 10: Perceived Wealth Decile across Homophily Strength and Wealth Perception.
+# File: Fig10_homophily_decile.pdf
 # BehaviorSpace: homophily_oneshot
 # Data: simdata/WealthPerception_homophily2 homophily_oneshot-table.csv
 dat_oneshot = read_csv(
@@ -919,19 +919,19 @@ df_long2 |>
   ) +
   theme(legend.position = "right")
 ggsave(
-  "Figs/Fig09_homophily_decile.pdf",
+  "Figs/Fig10_homophily_decile.pdf",
   width = 8,
   height = 6,
   device = cairo_pdf
 )
 
-# Fig. 10: Network visualization across different homophily strengths.
-# File: Fig10_networks.png
+# Fig. 11: Network visualization across different homophily strengths.
+# File: Fig11_networks.png
 # Network data has been extracted from simulation runs and layouted and visualized in Gephi.
 
-# Fig. 11: Time evolution of the percentage of agents with wealth below the mean
+# Fig. 12: Time evolution of the percentage of agents with wealth below the mean
 # wealth they perceive in their social network.
-# File: Fig11_homophily_perceived_mean_time.pdf
+# File: Fig12_homophily_perceived_mean_time.pdf
 # BehaviorSpace: homophily and perceived mean
 # Data: simdata/WealthPerception homophily and perceived mean-table.csv
 df <- read_csv(
@@ -1030,19 +1030,19 @@ dflong |>
     )
   )
 ggsave(
-  "Figs/Fig11_homophily_perceived_mean_time.pdf",
+  "Figs/Fig12_homophily_perceived_mean_time.pdf",
   width = 8,
   height = 5,
   device = cairo_pdf
 )
 
 
-# Fig. 12: Impact of homophily on perception of the mean wealth and the tax
+# Fig. 13: Impact of homophily on perception of the mean wealth and the tax
 # preferences.
-# File: Fig12_homophily_perceived_mean.pdf
-# BehaviorSpace: homophily and perceived mean (same as Fig. 11)
-# Data: simdata/WealthPerception homophily and perceived mean-table.csv (same as Fig. 11)
-dflong |> # dflong is take from Fig. 11 code
+# File: Fig13_homophily_perceived_mean.pdf
+# BehaviorSpace: homophily and perceived mean (same as Fig. 12)
+# Data: simdata/WealthPerception homophily and perceived mean-table.csv (same as Fig. 12)
+dflong |> # dflong is take from Fig. 12 code
   filter(step == 20) |>
   ggplot(aes(
     x = homophily_strength,
@@ -1090,15 +1090,15 @@ dflong |> # dflong is take from Fig. 11 code
     legend.byrow = TRUE
   )
 ggsave(
-  "Figs/Fig12_homophily_perceived_mean.pdf",
+  "Figs/Fig13_homophily_perceived_mean.pdf",
   width = 7,
   height = 4.5,
   device = cairo_pdf
 )
 
 
-# Fig. 13: Tax rate dynamics.
-# File: Fig13_taxrate_dyn.pdf
+# Fig. 14: Tax rate dynamics.
+# File: Fig14_taxrate_dyn.pdf
 # BehaviorSpace: tax_rate_new_social_on
 # Data: WealthPerception tax_rate_new_social_on-table_new.csv
 df <- read_csv(
@@ -1272,7 +1272,8 @@ p2 <- ggplot(
   ) +
   scale_fill_gradientn(
     colors = c("white", RColorBrewer::brewer.pal(6, "YlGnBu")),
-    values = scales::rescale(c(0, 0.0005, 0.05, 0.2, 0.5, 0.61, 0.66)) # Specify the points where colors change
+    values = scales::rescale(c(0, 0.0005, 0.05, 0.2, 0.5, 0.61, 0.66)), # Specify the points where colors change
+    labels = scales::percent_format(accuracy = 1)
   ) +
   scale_linewidth(range = c(0.5, 1.5)) +
   labs(
@@ -1303,7 +1304,7 @@ p2 <- ggplot(
   theme_minimal(base_size = 18)
 free(p1) / p2
 ggsave(
-  "Figs/Fig13_taxrate_dyn.pdf",
+  "Figs/Fig14_taxrate_dyn.pdf",
   width = 8.5,
   height = 10,
   device = cairo_pdf
